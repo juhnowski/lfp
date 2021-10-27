@@ -1,0 +1,17 @@
+sonar port alarm critical =
+  class
+    tm = new timer
+    count := 0
+    ping = before (microsec 50) action
+      port.write beep_on
+      tm.reset
+      after (millisec 2) stop
+      after (sec 3) ping
+    stop = before (microsec 50) action
+      port.write beep_off
+    echo = before (millisec 5) action
+      diff <- tm.sample
+      if critical diff then
+        count := count + 1
+        alarm count
+result {interrupt = echo, start = ping }

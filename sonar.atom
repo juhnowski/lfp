@@ -1,0 +1,15 @@
+checkSensor :: Word16 -> Atom () -> Atom ()
+checkSensor threshold overThresholdAction = atom "check_sensor" $ do
+  ready <- return $ bool’ "sensor_ready"
+  sensorValue <- return $ word16’ "sensor_value"
+  warmup <- timer "warmup"
+  beepOn <- bool "beep_on" False
+
+  period 3000 $ phase 000 $ atom "beepOn" $ do
+  call "beep_on"
+  beepOn <== true
+  startTimer warmup $ Const 10
+
+  period 3000 $ phase 050 $ atom " beepOff " $ do
+  call "beep_off"
+  beepOn <== false
